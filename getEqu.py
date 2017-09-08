@@ -9,8 +9,12 @@ import httplib, urllib
 client.init('U TOKEN')
 url = '' change for diff API e.g: https://apidoc.datayes.com/app/APIDetail/9
 U can use the print to simple output the data or write it to the csv
+
+API documentation
+https://mall.datayes.com/datapreview/106?lang=zh
+
 """
-def equitybasic(ticker,secID,type):
+def getequclient(ticker,secID,type):
     try:
         client = Client()
         client.init('ae8820c8eb8ccd418dd8141b4c685d2d208c58a564a9fd2c22f8c95ac6a2ef23')
@@ -58,15 +62,63 @@ def equitybasic(ticker,secID,type):
     except Exception, e:
         print 'error'
 
-if __name__ == "__main__":
+def getalldata():
 
     conn = httplib.HTTPSConnection("api.wmcloud.com", 443, timeout=60)
     token = "ae8820c8eb8ccd418dd8141b4c685d2d208c58a564a9fd2c22f8c95ac6a2ef23"
     headers = {"Authorization": "Bearer " + token}
-    params = urllib.urlencode({"listStatusCD": "L","secID": "000001.XSHE","ticker":"000001","equTypeCD":"A"})
-    conn.request("GET", "/data/v1/api/equity/getEqu.json",params, headers)
+    # params = urllib.urlencode({"listStatusCD": "L","secID":"" ,"ticker":"","equTypeCD":""})
+    conn.request("GET", "/data/v1/api/equity/getEqu.json?", "", headers)
     r1 = conn.getresponse()
-    # dataresult=json.loads(r1)
-    print r1.status, r1.reason
-    print r1.read()
+
+    dataresult=json.load(r1)
+    # print r1.status, r1.reason
+    # print r1.read()
     # print type(dataresult)
+    # print type(dataresult['data'])
+    # print type(len(dataresult['data']))
+    for item in dataresult['data']:
+        print item['secFullName'],item['secID'],item['ticker'],item['exchangeCD']
+
+def getstockdata(ticker):
+
+    conn = httplib.HTTPSConnection("api.wmcloud.com", 443, timeout=60)
+    token = "ae8820c8eb8ccd418dd8141b4c685d2d208c58a564a9fd2c22f8c95ac6a2ef23"
+    headers = {"Authorization": "Bearer " + token}
+    params = urllib.urlencode({"listStatusCD": "L","secID":"" ,"ticker":ticker,"equTypeCD":""})
+    conn.request("GET", "/data/v1/api/equity/getEqu.json?"+params, "", headers)
+    r1 = conn.getresponse()
+
+    dataresult=json.load(r1)
+    # print r1.status, r1.reason
+    # print r1.read()
+    # print type(dataresult)
+    # print type(dataresult['data'])
+    # print type(len(dataresult['data']))
+    for item in dataresult['data']:
+        print 'secFullName',item['secFullName']
+        print 'primeOperating',item['primeOperating']
+        print 'ListSector',item['ListSector']
+        print 'secFullName',item['secFullName']
+        print 'ticker',item['ticker']
+        print 'equType',item['equType']
+        print 'TotalShares', item['totalShares']
+        print ''
+        print 'ListSectorCD',item['ListSectorCD']
+        print 'exchangeCD',item['exchangeCD']
+        print 'secID',item['secID']
+        print 'equTypeCD',item['equTypeCD']
+        print 'nonrestFloatShares',item['nonrestFloatShares']
+        print 'endDate',item['endDate']
+        print 'officeAddr',item['officeAddr']
+        print 'listDate',item['listDate']
+        print 'secShortName',item['secShortName']
+        print 'TShEquity',item['TShEquity']
+        print 'nonrestfloatA',item['nonrestfloatA']
+        print 'listStatusCD',item['listStatusCD']
+        print 'partyID',item['partyID']
+        print 'transCurrCD',item['transCurrCD']
+        print 'exCountryCD',item['exCountryCD']
+
+
+getstockdata(603768)
