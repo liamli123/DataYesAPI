@@ -1,10 +1,11 @@
-# -*-coding:gbk-*-
+# -*- coding: utf-8 -*-
 from dataapiclient import Client
 import json
 import urllib2
 from urllib2 import urlopen
 import re
 import httplib, urllib
+import datetime
 """
 client.init('U TOKEN')
 url = '' change for diff API e.g: https://apidoc.datayes.com/app/APIDetail/9
@@ -78,7 +79,7 @@ def getalldata():
     # print type(dataresult['data'])
     # print type(len(dataresult['data']))
     for item in dataresult['data']:
-        print item['secFullName'],item['secID'],item['ticker'],item['exchangeCD']
+        print item['secFullName'],item['ticker'],item['equType'],item['exchangeCD']
 
 def getstockdata(ticker):
 
@@ -120,5 +121,105 @@ def getstockdata(ticker):
         print 'transCurrCD',item['transCurrCD']
         print 'exCountryCD',item['exCountryCD']
 
+def getstockprice(stock):
 
-getstockdata(603768)
+    conn = httplib.HTTPSConnection("api.wmcloud.com", 443, timeout=60)
+    token = "ae8820c8eb8ccd418dd8141b4c685d2d208c58a564a9fd2c22f8c95ac6a2ef23"
+    headers = {"Authorization": "Bearer " + token}
+    # enddate=datetime.datetime.strptime(edate,'%y%m%d').date()
+    # begdate=datetime.datetime.strptime(bdate,'%y%m%d').date()
+    params = urllib.urlencode({"secID":stock})
+    # Date format: yyyymmdd
+    conn.request("GET", "/data/v1/api/market/getMktEquyJL.json?"+params, "", headers)
+    r1 = conn.getresponse()
+
+    priceresult=json.load(r1)
+
+    # secID证券内部编码
+    print'证券内部编码', priceresult['data'][0]['secID']
+    # ticker证券代码
+    print'证券代码', priceresult['data'][0]['ticker']
+    # secShortName证券简称
+    print'证券简称', priceresult['data'][0]['secShortName']
+    # exchangeCD交易市场
+    print'交易市场', priceresult['data'][0]['exchangeCD']
+    # endDate截止日期
+
+    for i in range(len(priceresult['data'])):
+        print'首个交易日', priceresult['data'][i]['firstTradeDate']
+        print'开盘价', priceresult['data'][i]['openPrice']
+        print'最后交易日', priceresult['data'][i]['lastTradeDate']
+        print'收盘价', priceresult['data'][i]['closePrice']
+
+        # print'截止日期', priceresult['data'][i]['endDate']
+        # # firstTradeDate首个交易日
+        # print'首个交易日', priceresult['data'][i]['firstTradeDate']
+        # # lastTradeDate最后交易日
+        # print'最后交易日', priceresult['data'][i]['lastTradeDate']
+        # # numDays交易天数
+        # print'交易天数', priceresult['data'][i]['numDays']
+        # # preClosePrice昨收价
+        # print'昨收价', priceresult['data'][i]['preClosePrice']
+        # # openPrice开盘价
+        # print'开盘价', priceresult['data'][i]['openPrice']
+        # # highestPrice最高价
+        # print'最高价', priceresult['data'][i]['highestPrice']
+        # # dayHigh最高价日
+        # print'最高价日', priceresult['data'][i]['dayHigh']
+        # # lowestPrice最低价
+        # print'最低价', priceresult['data'][i]['lowestPrice']
+        # # dayLow最低价日
+        # print'最低价日', priceresult['data'][i]['dayLow']
+        # # closePrice收盘价
+        # print'收盘价', priceresult['data'][i]['closePrice']
+        # # highClosePrice最高收盘价
+        # print'最高收盘价', priceresult['data'][i]['highClosePrice']
+        # # dayHcp最高收盘价日
+        # print'最高收盘价日', priceresult['data'][i]['dayHcp']
+        # # lowClosePrice最低收盘价
+        # print'最低收盘价', priceresult['data'][i]['lowClosePrice']
+        # # dayLcp最低收盘价日
+        # print'最低收盘价日', priceresult['data'][i]['dayLcp']
+        # # avgPrice均价
+        # print'均价', priceresult['data'][i]['avgPrice']
+        # # rangePct振幅
+        # print'振幅', priceresult['data'][i]['rangePct']
+        # # adChg涨跌(后复权)
+        # print'涨跌(后复权)', priceresult['data'][i]['adChg']
+        # # adChgPct涨跌幅
+        # print'涨跌幅', priceresult['data'][i]['adChgPct']
+        # # logReturn对数收益率
+        # print'对数收益率', priceresult['data'][i]['logReturn']
+        # # turnoverVol成交量
+        # print'成交量', priceresult['data'][i]['turnoverVol']
+        # # turnoverValue成交额
+        # print'成交额', priceresult['data'][i]['turnoverValue']
+        # # turnoverRate换手率
+        # print'换手率', priceresult['data'][i]['turnoverRate']
+        # # avgTurnoverRate平均换手率
+        # print'平均换手率', priceresult['data'][i]['avgTurnoverRate']
+        # # adPreClosePrice昨收价(后复权)
+        # print'昨收价(后复权)', priceresult['data'][i]['adPreClosePrice']
+        # # adOpenPrice开盘价(后复权)
+        # print'开盘价(后复权)', priceresult['data'][i]['adOpenPrice']
+        # # adHighestPrice最高价(后复权)
+        # print'最高价(后复权)', priceresult['data'][i]['adHighestPrice']
+        # # adDayHigh最高价日(后复权)
+        # print'最高价日(后复权)', priceresult['data'][i]['adDayHigh']
+        # # adDayLow最低价日(后复权)
+        # print'最低价日(后复权)', priceresult['data'][i]['adDayLow']
+        # # adLowestPrice最低价(后复权)
+        # print'最低价(后复权)', priceresult['data'][i]['adLowestPrice']
+        # # adClosePrice收盘价(后复权)
+        # print'收盘价(后复权)', priceresult['data'][i]['adClosePrice']
+        # # adHighClosePrice最高收盘价(后复权)
+        # print'最高收盘价(后复权)', priceresult['data'][i]['adHighClosePrice']
+        # # adLowClosePrice最低收盘价(后复权)
+        # print'最低收盘价(后复权)', priceresult['data'][i]['adLowClosePrice']
+        # # adDayHcp最高收盘价日(后复权)
+        # print'最高收盘价日(后复权)', priceresult['data'][i]['adDayHcp']
+        # # adDayLcp最低收盘价日(后复权)
+        # print'最低收盘价日(后复权)' ,priceresult['data'][i]['adDayLcp']
+
+
+getstockprice('000001.XSHE')
